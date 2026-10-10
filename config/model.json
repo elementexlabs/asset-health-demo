@@ -1,0 +1,23 @@
+{
+  "version": "demo-1",
+  "assumptions": "invented demonstration values; not engineer-approved or calibrated",
+  "snapshot": "2026-03-31",
+  "seed": 20261010,
+  "generator_version": 1,
+  "lives": {"TX": 45, "POLE": 60},
+  "weights": {"TX": {"age": 0.3, "condition": 0.5, "measurement": 0.2}, "POLE": {"age": 0.2, "condition": 0.3, "measurement": 0.5}},
+  "minimum_evidence": 0.7,
+  "stale_inspection_years": 10,
+  "age_divisor": 365.2425,
+  "earliest_install_date": "1900-01-02",
+  "measurement_limits": {"TX": [0, 200], "POLE": [0, 100]},
+  "health_band_minima": [80, 60, 40, 20],
+  "consequence_cut_points": [10, 50, 150, 400],
+  "risk_band_minima": [15, 10, 5],
+  "annual_budget_cad": 300000,
+  "discount_rate": 0.03,
+  "horizon_years": 5,
+  "deterioration_rates": [1, 2, 3],
+  "replacement_health": 95,
+  "scales": {"age": "min(100, max(0, 100 * age / illustrative life))", "condition": "25 * (grade - 1); grade 1 best, 5 worst", "TX_measurement": "min(100, max(0, 2 * (loading - 80)))", "POLE_measurement": "min(100, max(0, 100 * (100 - strength) / 40))"}
+}

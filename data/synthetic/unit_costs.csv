@@ -1,0 +1,6 @@
+asset_group,subtype,installed_unit_cost_cad,basis,effective_date,source,estimated
+TX,25,8000,"installed like-for-like replacement including labour, excluding removal",2026-01-01,"invented demonstration assumption, not a quotation",True
+TX,50,12000,"installed like-for-like replacement including labour, excluding removal",2026-01-01,"invented demonstration assumption, not a quotation",True
+TX,100,20000,"installed like-for-like replacement including labour, excluding removal",2026-01-01,"invented demonstration assumption, not a quotation",True
+POLE,standard,4000,"installed like-for-like replacement including labour, excluding removal",2026-01-01,"invented demonstration assumption, not a quotation",True
+POLE,heavy,6000,"installed like-for-like replacement including labour, excluding removal",2026-01-01,"invented demonstration assumption, not a quotation",True
