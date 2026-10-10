@@ -16,7 +16,7 @@ That command regenerates synthetic CSVs and the test-only defect manifest, runs 
 
 For headless verification, set `AMDEMO_NO_OPEN=1`. Set `PYTHONDONTWRITEBYTECODE=1` to avoid bytecode caches. These environment variables do not change artifact bytes. Unit tests can also be run with `python3 -m unittest discover -s tests -v`.
 
-Tested build environments: Python 3.11.15 (`/Users/studio/.pyenv/shims/python3`) and Python 3.14.6 (`/opt/homebrew/bin/python3`) on macOS 27.0.1, arm64. Fresh local clones on both versions produce the same SHA-256: `dist/results.json` = `2166ebf3bce1272997d9b1071435913225d99df0452025e2e5f8ac41df256d61`; `dist/index.html` = `fb76f974be4d794dc20feb5095b90ab531b59624ab4a7939708d56cd86c50a92`. Browser verification uses an existing headless-shell binary, an isolated throwaway profile and debugging pipes; it installs nothing and attaches to no running browser. The build command itself needs no browser-test dependency.
+Tested build environments: Python 3.11.15 and Python 3.14.6 on macOS 27.0.1, arm64. Fresh local clones on both versions produce the same SHA-256: `dist/results.json` = `2166ebf3bce1272997d9b1071435913225d99df0452025e2e5f8ac41df256d61`; `dist/index.html` = `fb76f974be4d794dc20feb5095b90ab531b59624ab4a7939708d56cd86c50a92`. Browser verification uses an existing headless-shell binary, an isolated throwaway profile and debugging pipes; it installs nothing and attaches to no running browser. The build command itself needs no browser-test dependency.
 
 ## The six screens
 
