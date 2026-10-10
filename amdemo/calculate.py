@@ -18,7 +18,7 @@ def canonical(value):
 def validate_model(model):
     for group in GROUPS:
         weights = model["weights"][group]
-        if set(weights) != {"age", "condition", "measurement"} or any(not math.isfinite(v) or v < 0 for v in weights.values()) or not math.isclose(sum(weights.values()), 1, abs_tol=1e-10):
+        if set(weights) != {"age", "condition", "measurement"} or any(not math.isfinite(v) or v < 0 for v in weights.values()) or not math.isclose(math.fsum(weights.values()), 1, abs_tol=1e-10):
             raise ValueError("Weights must be finite, nonnegative, and sum to one")
         if not math.isfinite(model["lives"][group]) or model["lives"][group] <= 0:
             raise ValueError("Illustrative lives must be positive")
@@ -129,8 +129,9 @@ def score(row, model, valid=None):
     if valid["measurement"]:
         scores["measurement"] = clamp(2 * (row["measurement"] - 80)) if row["asset_group"] == "TX" else clamp(100 * (100 - row["measurement"]) / 40)
     weights = model["weights"][row["asset_group"]]
-    coverage = sum(weights[factor] for factor, value in scores.items() if value is not None)
-    hi = (100 - sum(weights[factor] * value for factor, value in scores.items() if value is not None) / coverage
+    # Built-in float sum changed in Python 3.12; use one algorithm on all versions.
+    coverage = math.fsum(weights[factor] for factor, value in scores.items() if value is not None)
+    hi = (100 - math.fsum(weights[factor] * value for factor, value in scores.items() if value is not None) / coverage
           if coverage + 1e-12 >= model["minimum_evidence"] and coverage > 0 and scores["condition"] is not None else None)
     factors = [{"factor": factor, "raw": {"age": age, "condition": row["condition_grade"], "measurement": row["measurement"]}[factor],
                 "score": value, "weight": weights[factor], "available_weight": weights[factor] / coverage if value is not None and coverage else None,

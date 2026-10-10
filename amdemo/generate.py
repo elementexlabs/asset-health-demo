@@ -47,10 +47,10 @@ def generate(model):
         return hi - math.sqrt((1 - u) * (hi - lo) * (hi - mode))
 
     def install_date():
-        u, cumulative = rng.random(), 0
+        u, weights = rng.random(), []
         for decade, weight in DECADES:
-            cumulative += weight
-            if u < cumulative:
+            weights.append(weight)
+            if u < math.fsum(weights):
                 break
         # The current decade ends at the snapshot. Never seed future baseline dates.
         year = uniform_int(decade, min(decade + 9, 2026))
@@ -68,9 +68,9 @@ def generate(model):
                    else ("standard" if subtype_draw < .8 else "heavy"))
         installed = install_date()
         age = (snapshot - installed).days / model["age_divisor"]
-        grade = min(5, max(1, int(math.floor(1 + 3 * min(age / model["lives"][group], 1.3) + normal(.8) + .5))))
+        grade = min(5, max(1, int(math.floor(math.fsum((1, 3 * min(age / model["lives"][group], 1.3), normal(.8), .5))))))
         measurement = (triangle(20, 65, 150) if group == "TX" else
-                       min(100, max(30, 100 - 30 * age / model["lives"][group] + normal(8))))
+                       min(100, max(30, math.fsum((100, -30 * age / model["lives"][group], normal(8))))))
         area = f"A{uniform_int(1, 6)}"
         customers = uniform_int(1, 30) if group == "TX" else area_customers[area]
         inspection_days = int(rng.random() * (12 * model["age_divisor"] + 1))

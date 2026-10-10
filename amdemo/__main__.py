@@ -1,6 +1,7 @@
 """Generate, check, verify fresh processes, publish locally, and open the report."""
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import subprocess
@@ -22,7 +23,7 @@ def package():
     results = calculate(rows, costs, model)
     cases = [
         ("TX: zero age, grade 1, loading 80", {"asset_group": "TX", "install_date": model["snapshot"], "condition_grade": 1, "measurement": 80}, 100),
-        ("Pole: zero age, grade 3, strength 80", {"asset_group": "POLE", "install_date": model["snapshot"], "condition_grade": 3, "measurement": 80}, 100 - 50 * (model["weights"]["POLE"]["condition"] + model["weights"]["POLE"]["measurement"])),
+        ("Pole: zero age, grade 3, strength 80", {"asset_group": "POLE", "install_date": model["snapshot"], "condition_grade": 3, "measurement": 80}, 100 - 50 * math.fsum((model["weights"]["POLE"]["condition"], model["weights"]["POLE"]["measurement"]))),
         ("TX: missing age, grade 3, loading 100", {"asset_group": "TX", "install_date": "", "condition_grade": 3, "measurement": 100}, None)]
     results["hand_checks"] = []
     for description, overrides, expected in cases:
@@ -32,8 +33,8 @@ def package():
         computed = score(row, model)
         if description.startswith("TX: missing"):
             w = model["weights"]["TX"]
-            available = w["condition"] + w["measurement"]
-            expected = (100 - (50 * w["condition"] + 40 * w["measurement"]) / available) if available > 0 and available + 1e-12 >= model["minimum_evidence"] else None
+            available = math.fsum((w["condition"], w["measurement"]))
+            expected = (100 - math.fsum((50 * w["condition"], 40 * w["measurement"])) / available) if available > 0 and available + 1e-12 >= model["minimum_evidence"] else None
         display = lambda value: "null (insufficient evidence)" if value is None else f"{value:.3f}"
         results["hand_checks"].append({"description": description, "scores": ", ".join(f'{f["factor"]}={f["score"]}' for f in computed["factors"]), "expected": display(expected), "actual": display(computed["health"])})
         if (computed["health"] is None) != (expected is None) or (expected is not None and abs(computed["health"] - expected) > 1e-9):

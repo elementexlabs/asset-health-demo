@@ -1,3 +1,4 @@
+import builtins
 import copy
 import hashlib
 import json
@@ -6,6 +7,7 @@ from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 from amdemo import acceptance
 from amdemo.calculate import (calculate, canonical, cost_lookup, date_kind, dispositions,
                               health_band, likelihood, consequence, risk_band, score,
@@ -230,6 +232,22 @@ class DemoTests(unittest.TestCase):
         model["weights"]["POLE"] = {"age": .3, "condition": .4, "measurement": .3}
         row = self.fixture(asset_group="POLE", subtype="standard", condition_grade=3, measurement=80)
         self.assertEqual(score(row, model)["health"], 65)
+
+    def test_36_no_plain_float_sum(self):
+        from amdemo.__main__ import package
+        integer_or_decimal_sum = builtins.sum
+
+        def reject_float_sum(values, start=0):
+            values = list(values)
+            if isinstance(start, float) or any(isinstance(value, float) for value in values):
+                raise AssertionError("Use math.fsum for float totals")
+            return integer_or_decimal_sum(values, start)
+
+        # Exercise every health row, hand fixture and rendered table on either runtime.
+        # Even a correctly compensated built-in sum must fail this contract.
+        with patch("builtins.sum", side_effect=reject_float_sum):
+            results = package()[0]
+        self.assertTrue(all(check["status"] == "PASS" for check in results["acceptance"]))
 
 
 if __name__ == "__main__":
