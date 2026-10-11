@@ -2,7 +2,9 @@
 
 Synthetic data, not a real utility. Method demonstration; ElementeX Labs has no utility clients.
 
-This local demo shows data quality, inventory and partial current replacement value (CRV), a visible health index, an age profile, two replacement scenarios and four acceptance checks. It has one snapshot, **2026-03-31**. There are **300 transformers and 700 poles**, with deliberately defective data. Appended duplicates bring the source to **1,015 rows**: **990 accepted in service, 15 held, 10 excluded exact copies**. Held and excluded rows are never added to inventory or CRV.
+Live page: https://elementexlabs.ca/demos/asset-health/ serves the committed `dist/index.html` unchanged (same SHA-256 as listed below).
+
+This demonstration shows data quality, inventory and partial current replacement value (CRV), a visible health index, an age profile, two replacement scenarios and four acceptance checks. It has one snapshot, **2026-03-31**. There are **300 transformers and 700 poles**, with deliberately defective data. Appended duplicates bring the source to **1,015 rows**: **990 accepted in service, 15 held, 10 excluded exact copies**. Held and excluded rows are never added to inventory or CRV.
 
 ## Run
 
@@ -77,9 +79,9 @@ These are **Demo thresholds, not utility acceptance**:
 
 All 36 automated tests include hand-worked health/PV, band and date boundaries, inspection evidence, exact defect detection counts, disposition precedence, cost lookup and missing costs, evidence threshold, weight validation/configuration, shared cohorts, budget stopping, intervention timing, static HTML and fresh-process repeatability. Float totals use `math.fsum`, including model validation, health evidence and weighted scores, generator accumulation and hand-check expectations, so the Python 3.12 change to built-in float `sum` does not change the outputs. The regression test rejects any built-in `sum` with float inputs during a complete candidate build. Integer counts and dollars retain exact integer sums; present value retains Decimal arithmetic. Four deliberate corruptions remove a hold reason, alter CRV by one dollar, hide an estimated-age flag and alter a canonical result. Each corresponding acceptance check must report FAIL for the unit test to pass.
 
-`tools/headless_check.py` is a commissioning verification utility, separate from the portable build. It uses the installed headless shell directly and only the Python standard library. It takes `--binary`, `--page`, `--shots` and `--profile` paths. It verifies the actual local file, traverses all six tabs, tests lookup and CSV downloads, captures six PNGs and rejects external requests. It uses process debugging pipes, not a browser attachment or network server. Do not install anything to run it.
+`tools/headless_check.py` is a verification utility, separate from the portable build. It uses the installed headless shell directly and only the Python standard library. It takes `--binary`, `--page`, `--shots` and `--profile` paths. It verifies the actual local file, traverses all six tabs, tests lookup and CSV downloads, captures six PNGs and rejects external requests. It uses process debugging pipes, not a browser attachment or network server. Do not install anything to run it.
 
-Manual browser checklist (not claimed as completed): in Firefox and Chrome, open the local file; navigate six tabs with pointer and arrow keys; check six notices, actual/expected acceptance values, asset lookup including an estimated and unvalued row, and downloads; resize to a narrow window. No broad browser compatibility claim is made.
+Not yet checked by hand: Firefox, Edge and Chrome, or any operating system other than macOS. A manual check would open the page, move through the six tabs with pointer and arrow keys, check the six notices, the actual and expected acceptance values, an asset lookup including an estimated and an unvalued row, and the downloads, then resize to a narrow window. No broad browser compatibility claim is made.
 
 ## Open by design
 
@@ -98,19 +100,17 @@ Code, page templates and tests are Apache-2.0, in `LICENSE`. Synthetic fixtures,
 
 ElementeX Labs Inc. has no utility clients. A passing test is not a utility reference, engineering approval, operational prioritization, a safety classification or evidence that one person can deliver a utility programme. There are no real places, buyers, utility names, standard limits or published benchmarks behind any number. Historical snapshots, retirement tracking and full lifecycle costing are not demonstrated.
 
-## Design decisions
+## Design notes
 
-The approved reduced specification is implemented, with these bounded corrections and clarifications from the technical reviews and commissioning instructions:
+The build follows these rules:
 
 1. **Source count:** 1,000 is the base population. Ten exact and five conflicting copies append 15 rows. Reconciliation states 1,015 source / 990 accepted / 15 held / 10 excluded, instead of calling appended rows part of a 1,000-row source.
 2. **Valid fixture dates:** the current installation decade ends at the snapshot; estimated July dates cannot land in the future. This prevents unintended baseline defects from contaminating exact planted counts. Invalid dates are unavailable, never unknown or mean-filled.
-3. **Elapsed age:** use the review's 365.2425-day divisor. Ten-year bins are half-open; estimates remain separate. The two-factor alternative would replace the approved model and was not adopted.
-4. **Inspection evidence:** condition needs a valid inspection date as well as a valid grade; missing/future/malformed inspection evidence cannot score. Keep the approved 10-year stale flag without introducing a new two-year expiry. This preserves visible evidence without claiming an engineering inspection cycle.
+3. **Elapsed age:** age uses a 365.2425-day year. Ten-year bins are half-open; estimates remain separate.
+4. **Inspection evidence:** condition needs a valid inspection date as well as a valid grade; missing/future/malformed inspection evidence cannot score. A 10-year stale-inspection flag is kept, with no shorter expiry. This keeps the evidence visible without claiming an engineering inspection cycle.
 5. **Comparable plans:** both plans exclude unvalued, unscored and non-recorded ages. A plan ordered by known age cannot rank unknown or estimated dates honestly. The same fixed cohort is used in both plans and all three scenarios, with per-row exclusion reasons. Copies sharing an eligible asset ID still remain excluded source rows.
-6. **Timing correction:** the review specifies beginning-of-year observations after intervention. Year 1 starts at HI0 for unreplaced assets. Start-of-year replacement spending is discounted by t−1, rather than the reduced specification's t; replacement HI stays at its declared scenario value of 95. No probabilistic deterioration claim is implied.
+6. **Timing:** observations are at the beginning of each year, after any intervention. Year 1 starts at HI0 for unreplaced assets. Start-of-year replacement spending is discounted by t−1; replacement HI stays at its declared scenario value of 95. No probabilistic deterioration claim is implied.
 7. **Ordinal risk:** use individual ordinal products only to order/count categories. No sum, mean, percentage reduction or currency column appears in the risk table. Explicit invented band cut points and inclusive consequence edges make the output testable.
-8. **Visible uncertainty:** source, inventory, scored and plan populations have separate numerators, denominators and source-ID lists. A bounded row-level contract replaces an untestable claim to trace every uncertainty through unspecified outputs. The test-only planting log is not displayed as detection validation.
-9. **Verification scope:** 36 tests give more boundary coverage than the approximate 15-test suggestion. Six isolated headless-shell screenshots and commissioning smoke assertions are expressly required by the build brief; no test framework or dependency is added. The manual browser checklist is provided without claiming it was executed.
-10. **Local operation:** normal invocation retains the requested browser opener; automation suppresses it with an environment variable so verification never touches a running desktop browser. Nothing is pushed, published or deployed.
-
-The configured planning route was unavailable in this session; planning and implementation were completed in the root session under the task's explicit best-effort override. Hub: no (commissioning brief prohibits it). No external request was used.
+8. **Visible uncertainty:** source, inventory, scored and plan populations have separate numerators, denominators and source-ID lists. A bounded row-level contract is used, because a claim to trace every uncertainty through every output could not be tested. The test-only planting log is not displayed as detection validation.
+9. **Verification scope:** 36 automated tests cover the boundaries listed above. Six isolated headless-shell screenshots and smoke assertions check the page; no test framework or dependency is added. Manual browser checks are listed above as not yet done.
+10. **Local operation and hosting:** a normal build opens the page in the default browser; automated checks suppress this with an environment variable so they never touch a running desktop browser. The hosted page is the committed `dist/index.html`, served as a static file with no server-side code.
